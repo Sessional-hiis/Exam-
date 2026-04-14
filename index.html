@@ -13,7 +13,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAM_Y9vNlwPK_9ZJwmD6UVD4YMa2zoRYwk",
@@ -29,23 +29,29 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // 🔹 LOAD QUESTIONS (VISIBLE TO ALL USERS)
-async function loadQuestions() {
-  const querySnapshot = await getDocs(collection(db, "exams"));
-  
-  let html = "";
+function loadQuestions() {
+  onSnapshot(collection(db, "exams"), (snapshot) => {
 
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
+    if (snapshot.empty) {
+      document.getElementById("questions").innerHTML = "No questions yet";
+      return;
+    }
 
-    html += `
-      <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-        <h3>${data.question}</h3>
-        ${data.options.map(opt => `<p>${opt}</p>`).join("")}
-      </div>
-    `;
+    let html = "";
+
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+
+      html += `
+        <div style="margin:10px; padding:10px; border:1px solid #ccc;">
+          <h3>${data.question}</h3>
+          ${data.options.map(opt => `<p>${opt}</p>`).join("")}
+        </div>
+      `;
+    });
+
+    document.getElementById("questions").innerHTML = html;
   });
-
-  document.getElementById("questions").innerHTML = html || "No questions yet";
 }
 
 // 🔹 ADD QUESTION (ADMIN)
