@@ -731,5 +731,29 @@ showScreen('home');
   window.addDoc = addDoc;
   window.getDocs = getDocs;
 </script>
+ <script>
+async function loadQuestions() {
+  const querySnapshot = await getDocs(collection(db, "exams"));
+  
+  let html = "";
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+
+    html += `
+      <div style="margin:10px; padding:10px; border:1px solid #ccc;">
+        <h3>${data.question}</h3>
+        ${data.options.map(opt => `<p>• ${opt}</p>`).join("")}
+      </div>
+    `;
+  });
+
+  document.getElementById("questions").innerHTML = html;
+}
+
+window.onload = loadQuestions;
+</script>
+ <<button>Questions Loading...</button>
+<div id="questions"></div>
 </body>
 </html>
