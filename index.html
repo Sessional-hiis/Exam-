@@ -753,7 +753,26 @@ async function loadQuestions() {
 
 window.onload = loadQuestions;
 </script>
- <<button>Questions Loading...</button>
+
+<script>
+async function addQuestionToFirebase() {
+  const question = prompt("Enter question:");
+  const options = [
+    prompt("Option 1"),
+    prompt("Option 2"),
+    prompt("Option 3"),
+    prompt("Option 4")
+  ];
+
+  await addDoc(collection(db, "exams"), {
+    question: question,
+    options: options
+  });
+
+  alert("Question added successfully!");
+}
+</script>
+<button onclick="addQuestionToFirebase()">Add Question</button>
 <div id="questions"></div>
 </body>
 </html>
